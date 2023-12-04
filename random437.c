@@ -2,9 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <math.h>
 #include <string.h>  // Include for strcmp
-
+#include "random437.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -32,22 +31,8 @@ void *ride_thread(void *arg);
 void *statistics_thread(void *arg);
 
 
-
-int poissonRandom(double lambda) {
-    double L = exp(-lambda);
-    int k = 0;
-    double p = 1;
-
-    do {
-        k++;
-        p *= (double)rand() / RAND_MAX;
-    } while (p > L);
-
-    return k - 1;
-}
-
-
 int main(int argc, char *argv[]) {
+    srand(time(NULL));
     if (argc != 5) {
         fprintf(stderr, "Usage: %s -N CARNUM -M MAXPERCAR\n", argv[0]);
         return 1;
@@ -137,6 +122,15 @@ void *statistics_thread(void *arg) {
         pthread_mutex_unlock(&mutex);
         sleep(1); // Simulate one-minute interval
     }
+
+        if (totalArrived > 0) {
+        double averageWaitTime = (double)totalWaitTime / totalArrived;
+        printf("Average waiting time per person (in minutes): %.2f\n", averageWaitTime);
+    } else {
+        printf("No arrivals to calculate average waiting time.\n");
+    }
+
+    return NULL;
 
     // Calculate final statistics
     double averageWaitTime = (double)totalWaitTime / totalArrived;
